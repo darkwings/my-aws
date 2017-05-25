@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+APP_NAME="my-aws"
+APP_MAIN_CLASS="com.frank.myaws.App"
+SHUTDOWN_WAIT=10
+
+$JAVA_HOME/bin/java -cp $APP_NAME"-${project.version}.jar:conf/:lib/*" -Xms1G -Xmx2G $APP_MAIN_CLASS listener ${aws.client.id} ${aws.endpoint} ./certificates/${aws.private.pem} ./certificates/${aws.private.key} ${bcm.pin} > /dev/null &
+
