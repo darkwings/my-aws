@@ -32,8 +32,8 @@ public class App {
 
     public static void main( String... args ) throws Exception {
 
-        if ( args.length != 5 ) {
-            System.out.println( "Params: [type] [clientId] [endpoint] [path_to_certificate] [path_to_private_key]" );
+        if ( args.length != 6 ) {
+            LOGGER.error( "Params: [type] [clientId] [endpoint] [path_to_certificate] [path_to_private_key] [bcm_pin]" );
             System.exit( 1 );
         }
 
