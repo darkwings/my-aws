@@ -14,8 +14,6 @@ public class Listener extends AbstractActor {
     protected final LoggingAdapter log = Logging.getLogger( context().system(), this );
 
     private PiAdapter piAdapter;
-    private Integer pin;
-    private boolean status;
 
     public static final class Message {
 
@@ -26,22 +24,19 @@ public class Listener extends AbstractActor {
         }
     }
 
-    public static Props props( PiAdapter piAdapter, Integer pin ) {
-        return Props.create( Listener.class, piAdapter, pin );
+    public static Props props( PiAdapter piAdapter ) {
+        return Props.create( Listener.class, piAdapter );
     }
 
-    public Listener( PiAdapter piAdapter, Integer pin ) {
+    public Listener( PiAdapter piAdapter ) {
         this.piAdapter = piAdapter;
-        this.pin = pin;
-        this.status = piAdapter.in( pin );
     }
 
     public Receive createReceive() {
         return receiveBuilder().
                 match( Message.class, m -> {
                     log.info( "Received from AWS: {}", m.content );
-                    status = !status;
-                    piAdapter.out( pin, status );
+                    piAdapter.toggle();
                 } ).
                 matchAny( any -> log.info( "Received and ignored {}", any ) ).
                 build();

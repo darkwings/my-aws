@@ -9,15 +9,9 @@ public interface PiAdapter {
         IN, OUT
     }
 
-    enum GpioMode {
-        GPIO, BCM;
-    }
+    void init( Integer pin, PinMode mode );
 
-    void gpioMode( GpioMode mode );
+    void toggle();
 
-    void pinMode( Integer pin, PinMode mode );
-
-    void out( Integer pin, boolean status );
-
-    boolean in( Integer pin );
+    boolean in();
 }

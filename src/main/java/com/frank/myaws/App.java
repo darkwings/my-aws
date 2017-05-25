@@ -95,10 +95,9 @@ public class App {
                     config().getString( "my-aws.internal.pi-adapter" );
 
             PiAdapter adapter = (PiAdapter) Class.forName( adapterClassName ).newInstance();
-            adapter.pinMode( bcmPin, PiAdapter.PinMode.OUT );
-            adapter.gpioMode( PiAdapter.GpioMode.BCM );
+            adapter.init( bcmPin, PiAdapter.PinMode.OUT );
 
-            ActorRef listener = system.actorOf( Listener.props( adapter, bcmPin ), "Listener" );
+            ActorRef listener = system.actorOf( Listener.props( adapter ), "Listener" );
             FromAwsTopic topic = new FromAwsTopic( fromAwsTopic, AWSIotQos.QOS0, listener );
             client.subscribe( topic );
         }

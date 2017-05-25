@@ -13,21 +13,25 @@ public class MockPiAdapter implements PiAdapter {
 
     private static int counter = 0;
 
-    public void gpioMode( GpioMode mode ) {
+    private Integer pin;
+    private PinMode pinMode;
+    private boolean status = false;
 
-        LOGGER.info( "GPIO mode set to {}", mode );
+    @Override
+    public void init( Integer pin, PinMode mode ) {
+        this.pin = pin;
+        this.pinMode = mode;
     }
 
-    public void pinMode( Integer pin, PinMode mode ) {
-        LOGGER.info( "pin mode set to {} for pin {}", mode, pin );
+    @Override
+    public void toggle() {
+        status = !status;
+        LOGGER.info( "Received toggle. Status is {}", status );
     }
 
-    public void out( Integer pin, boolean status ) {
-        LOGGER.info( "status set to '{}' for pin {}", status, pin );
-    }
-
-    public boolean in( Integer pin ) {
+    @Override
+    public boolean in() {
         counter++;
-        return counter % 2 == 0;
+        return counter %2 == 0;
     }
 }

@@ -192,27 +192,27 @@
         </dependency>
 
         <dependency>
-            <groupId>org.pi4j</groupId>
+            <groupId>com.pi4j</groupId>
             <artifactId>pi4j-core</artifactId>
-            <version>1.0.1B</version>
+            <version>1.1</version>
         </dependency>
 
         <dependency>
-            <groupId>org.pi4j</groupId>
+            <groupId>com.pi4j</groupId>
             <artifactId>pi4j-device</artifactId>
-            <version>1.0.1B</version>
+            <version>1.1</version>
         </dependency>
 
         <dependency>
-            <groupId>org.pi4j</groupId>
+            <groupId>com.pi4j</groupId>
             <artifactId>pi4j-service</artifactId>
-            <version>1.0.1B</version>
+            <version>1.1</version>
         </dependency>
 
         <dependency>
-            <groupId>org.pi4j</groupId>
+            <groupId>com.pi4j</groupId>
             <artifactId>pi4j-gpio-extension</artifactId>
-            <version>1.0.1B</version>
+            <version>1.1</version>
         </dependency>
 
         <dependency>
@@ -226,6 +226,13 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>3.6.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
