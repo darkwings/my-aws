@@ -28,12 +28,13 @@ public class Pi4JAdapter implements PiAdapter {
 
     @Override
     public void init( Integer pin, PinMode mode ) {
+        LOGGER.info( "Setting mode {} on pin {}", mode, pin );
         this.pin = pin;
         this.mode = mode;
 
         if ( mode == PinMode.OUT ) {
-
             getPin( pin ).ifPresent( raspiPin -> {
+                LOGGER.info( "Initializing pin {}", raspiPin );
                 out = gpio.provisionDigitalOutputPin( raspiPin, "MyPin", PinState.HIGH );
                 out.setShutdownOptions( true, PinState.LOW );
                 out.low();
@@ -44,6 +45,7 @@ public class Pi4JAdapter implements PiAdapter {
 
     @Override
     public void toggle() {
+        LOGGER.debug( "toggle called()" );
         if (!initialized) {
             LOGGER.warn( "Adapter not initalized" );
             return;
@@ -76,12 +78,6 @@ public class Pi4JAdapter implements PiAdapter {
             LOGGER.warn( "Pin {} not valid", gpioPinNum );
             return Optional.empty();
         }
-
-//        StringBuilder builder = new StringBuilder( "GPIO_" );
-//        if ( gpioPinNum < 10 ) {
-//            builder.append( "0" );
-//        }
-//        builder.append( gpioPinNum );
 
         return Optional.of( RaspiPin.getPinByAddress( gpioPinNum ) );
     }

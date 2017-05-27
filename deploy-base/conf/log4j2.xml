@@ -26,7 +26,7 @@
 
 		<Root level="${logging.level}">
 			<AppenderRef ref="ROLLING_FILE" />
-			<AppenderRef ref="Console" />
+			<!--AppenderRef ref="Console" /-->
 		</Root>
 	</Loggers>
 </Configuration>
