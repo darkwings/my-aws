@@ -28,7 +28,7 @@ public class Publisher extends AbstractActor {
 
         @Override
         public String toString() {
-            final StringBuilder sb = new StringBuilder( "Message {" );
+            final StringBuilder sb = new StringBuilder( "Command {" );
             sb.append( "topic='" ).append( topic ).append( '\'' );
             sb.append( ", payload='" ).append( payload ).append( '\'' );
             sb.append( '}' );
