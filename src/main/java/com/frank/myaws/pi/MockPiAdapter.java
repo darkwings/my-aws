@@ -16,11 +16,13 @@ public class MockPiAdapter implements PiAdapter {
     private Integer pin;
     private PinMode pinMode;
     private boolean status = false;
+    private String name;
 
     @Override
-    public void init( Integer pin, PinMode mode ) {
+    public void init( String name, Integer pin, PinMode mode ) {
         this.pin = pin;
         this.pinMode = mode;
+        this.name = name;
     }
 
     @Override
@@ -33,5 +35,10 @@ public class MockPiAdapter implements PiAdapter {
     public boolean in() {
         counter++;
         return counter %2 == 0;
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

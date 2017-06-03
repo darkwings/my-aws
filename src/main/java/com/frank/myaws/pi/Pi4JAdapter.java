@@ -16,6 +16,7 @@ public class Pi4JAdapter implements PiAdapter {
     private GpioController gpio;
     private Integer pin;
     private PinMode mode;
+    private String name;
 
     private GpioPinDigitalOutput out;
 
@@ -27,10 +28,11 @@ public class Pi4JAdapter implements PiAdapter {
     }
 
     @Override
-    public void init( Integer pin, PinMode mode ) {
-        LOGGER.info( "Setting mode {} on pin {}", mode, pin );
+    public void init( String name, Integer pin, PinMode mode ) {
+        LOGGER.info( "Adapter {}: setting mode {} on pin {}", name, mode, pin );
         this.pin = pin;
         this.mode = mode;
+        this.name = name;
 
         if ( mode == PinMode.OUT ) {
             getPin( pin ).ifPresent( raspiPin -> {
@@ -45,14 +47,14 @@ public class Pi4JAdapter implements PiAdapter {
 
     @Override
     public void toggle() {
-        LOGGER.debug( "toggle called()" );
+        LOGGER.debug( "toggle called() on adapter {}", name );
         if (!initialized) {
-            LOGGER.warn( "Adapter not initalized" );
+            LOGGER.warn( "Adapter {} not initalized", name );
             return;
         }
 
         if ( mode == PinMode.IN ) {
-            LOGGER.info( "Pin {} is IN mode, toggle not supported()", pin );
+            LOGGER.info( "Adapter {}: pin {} is IN mode, toggle not supported()", name, pin );
             return;
         }
 
@@ -62,7 +64,7 @@ public class Pi4JAdapter implements PiAdapter {
     @Override
     public boolean in() {
         if ( mode == PinMode.OUT ) {
-            LOGGER.info( "Pin {} is OUT mode, read NOT supported()", pin );
+            LOGGER.info( "Adapter {}: pin {} is OUT mode, read NOT supported()", name, pin );
             return false;
         }
 
@@ -80,5 +82,10 @@ public class Pi4JAdapter implements PiAdapter {
         }
 
         return Optional.of( RaspiPin.getPinByAddress( gpioPinNum ) );
+    }
+
+    @Override
+    public String getName() {
+        return name;
     }
 }

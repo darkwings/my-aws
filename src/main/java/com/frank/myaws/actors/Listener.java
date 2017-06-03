@@ -5,7 +5,10 @@ import akka.actor.Props;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
 import com.frank.myaws.action.Action;
+import com.frank.myaws.action.Location;
 import com.frank.myaws.pi.PiAdapter;
+
+import java.util.Map;
 
 /**
  * @author ftorriani
@@ -14,7 +17,7 @@ public class Listener extends AbstractActor {
 
     protected final LoggingAdapter log = Logging.getLogger( context().system(), this );
 
-    private PiAdapter piAdapter;
+    private Map<Location, PiAdapter> piAdapters;
 
     public static final class Command {
 
@@ -25,12 +28,12 @@ public class Listener extends AbstractActor {
         }
     }
 
-    public static Props props( PiAdapter piAdapter ) {
-        return Props.create( Listener.class, piAdapter );
+    public static Props props( Map<Location, PiAdapter> piAdapters ) {
+        return Props.create( Listener.class, piAdapters );
     }
 
-    public Listener( PiAdapter piAdapter ) {
-        this.piAdapter = piAdapter;
+    public Listener( Map<Location, PiAdapter> piAdapters ) {
+        this.piAdapters = piAdapters;
     }
 
     public Receive createReceive() {
@@ -46,6 +49,9 @@ public class Listener extends AbstractActor {
     private void execute( Action action ) {
         switch (action.getAction()) {
             case TOGGLE_LIGHT:
+                Location location = action.getLocation();
+                log.info( "Executing action for Location {}", location );
+                PiAdapter piAdapter = piAdapters.get( location );
                 piAdapter.toggle();
                 break;
             default:

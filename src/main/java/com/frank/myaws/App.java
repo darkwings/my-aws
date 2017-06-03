@@ -5,14 +5,22 @@ import akka.actor.ActorSystem;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.amazonaws.services.iot.client.sample.sampleUtil.SampleUtil;
+import com.frank.myaws.action.Location;
 import com.frank.myaws.actors.Listener;
 import com.frank.myaws.actors.Publisher;
 import com.frank.myaws.aws.FromAwsTopic;
 import com.frank.myaws.pi.PiAdapter;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigObject;
 import scala.concurrent.duration.FiniteDuration;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -28,12 +36,11 @@ public class App {
     private String endpoint;
     private String certificate;
     private String privateKey;
-    private Integer bcmPin;
 
     public static void main( String... args ) throws Exception {
 
-        if ( args.length != 6 ) {
-            LOGGER.error( "Params: [type] [clientId] [endpoint] [path_to_certificate] [path_to_private_key] [bcm_pin]" );
+        if ( args.length != 5 ) {
+            LOGGER.error( "Params: [type] [clientId] [endpoint] [path_to_certificate] [path_to_private_key]" );
             System.exit( 1 );
         }
 
@@ -42,20 +49,19 @@ public class App {
         String endpoint = args[ 2 ];
         String certificate = args[ 3 ];
         String privateKey = args[ 4 ];
-        Integer bcmPin = Integer.parseInt( args[ 5 ] );
+//        Integer bcmPin = Integer.parseInt( args[ 5 ] );
 
-        new App( type, clientId, endpoint, certificate, privateKey, bcmPin ).start();
+        new App( type, clientId, endpoint, certificate, privateKey ).start();
 
     }
 
     private App( String type, String clientId, String endpoint,
-                 String certificate, String privateKey, Integer bcmPin ) {
+                 String certificate, String privateKey ) {
         this.type = type;
         this.clientId = clientId;
         this.endpoint = endpoint;
         this.certificate = certificate;
         this.privateKey = privateKey;
-        this.bcmPin = bcmPin;
     }
 
     private void start() throws Exception {
@@ -91,16 +97,34 @@ public class App {
 
             String fromAwsTopic = system.settings().
                     config().getString( "my-aws.aws-iot.push-receive-topic" );
-            String adapterClassName = system.settings().
-                    config().getString( "my-aws.internal.pi-adapter" );
 
-            PiAdapter adapter = (PiAdapter) Class.forName( adapterClassName ).newInstance();
-            adapter.init( bcmPin, PiAdapter.PinMode.OUT );
+            Map<Location, PiAdapter> adapters = transform(
+                    system.settings().config().getString( "my-aws.internal.pi-adapter" ),
+                    system.settings().config().getConfigList( "my-aws.locations" ));
 
-            ActorRef listener = system.actorOf( Listener.props( adapter ), "Listener" );
+            ActorRef listener = system.actorOf( Listener.props( adapters ), "Listener" );
             FromAwsTopic topic = new FromAwsTopic( fromAwsTopic, AWSIotQos.QOS0, listener );
             client.subscribe( topic );
         }
+    }
+
+    private Map<Location,PiAdapter> transform( String adapterClassName,
+                                               List<? extends Config> configList )
+            throws ClassNotFoundException, IllegalAccessException, InstantiationException {
+        Objects.requireNonNull(configList);
+
+        Map<Location, PiAdapter> locations = new HashMap<>();
+        for ( Config c : configList ) {
+            Integer pin = c.getInt( "pin" );
+            Location location = Location.valueOf( c.getString( "location" ) );
+
+            PiAdapter adapter = (PiAdapter) Class.forName( adapterClassName ).newInstance();
+            adapter.init( location.name(), pin, PiAdapter.PinMode.OUT );
+
+            locations.put( location, adapter );
+        }
+
+        return locations;
     }
 
 }

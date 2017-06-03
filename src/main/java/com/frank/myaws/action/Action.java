@@ -12,17 +12,16 @@ public class Action {
 
     private static final Logger LOGGER = LogManager.getLogger( Action.class );
 
-    public enum Type {
-        TOGGLE_LIGHT
-    }
-
     private Type action;
+
+    private Location location;
 
     public Action() {
     }
 
-    public Action( Type action ) {
+    public Action( Type action, Location location ) {
         this.action = action;
+        this.location = location;
     }
 
     public Type getAction() {
@@ -33,10 +32,19 @@ public class Action {
         this.action = action;
     }
 
+    public Location getLocation() {
+        return location;
+    }
+
+    private void setLocation( Location location ) {
+        this.location = location;
+    }
+
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder( "Action {" );
         sb.append( "action=" ).append( action );
+        sb.append( ", location=" ).append( location );
         sb.append( '}' );
         return sb.toString();
     }
