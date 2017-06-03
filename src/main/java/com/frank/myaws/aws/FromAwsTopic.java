@@ -5,12 +5,11 @@ import com.amazonaws.services.iot.client.AWSIotMessage;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.amazonaws.services.iot.client.AWSIotTopic;
 import com.frank.myaws.action.Action;
-import com.frank.myaws.actors.Listener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Messages from AWS
+ * Subscribes from Messages from AWS IoT
  *
  * @author ftorriani
  */
@@ -28,7 +27,7 @@ public class FromAwsTopic extends AWSIotTopic {
     @Override
     public void onMessage( AWSIotMessage message ) {
         Action.fromMessage( message.getStringPayload() ).ifPresent( action -> {
-            listener.tell( new Listener.Command( action ), ActorRef.noSender() );
+            listener.tell( action, ActorRef.noSender() );
         } ).orElse( () -> {
             LOGGER.warn( "Unknown message {}", message.getStringPayload() );
         } );

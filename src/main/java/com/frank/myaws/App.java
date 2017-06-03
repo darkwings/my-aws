@@ -6,12 +6,11 @@ import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.amazonaws.services.iot.client.sample.sampleUtil.SampleUtil;
 import com.frank.myaws.action.Location;
-import com.frank.myaws.actors.Listener;
+import com.frank.myaws.actors.ActionExecutor;
 import com.frank.myaws.actors.Publisher;
 import com.frank.myaws.aws.FromAwsTopic;
 import com.frank.myaws.pi.PiAdapter;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigObject;
 import scala.concurrent.duration.FiniteDuration;
 
 import org.apache.logging.log4j.Logger;
@@ -83,7 +82,7 @@ public class App {
             String toAwsTopic = system.settings().
                     config().getString( "my-aws.aws-iot.push-send-topic" );
 
-            ActorRef publisher = system.actorOf( Publisher.props( client ), "Publisher" );
+            ActorRef publisher = system.actorOf( Publisher.props( client ), Publisher.name() );
 
             system.scheduler().schedule( FiniteDuration.apply( 5, SECONDS ),
                     FiniteDuration.apply( 5, SECONDS ),
@@ -102,8 +101,9 @@ public class App {
                     system.settings().config().getString( "my-aws.internal.pi-adapter" ),
                     system.settings().config().getConfigList( "my-aws.locations" ));
 
-            ActorRef listener = system.actorOf( Listener.props( adapters ), "Listener" );
-            FromAwsTopic topic = new FromAwsTopic( fromAwsTopic, AWSIotQos.QOS0, listener );
+            ActorRef actionExecutor = system.actorOf( ActionExecutor.props( adapters ),
+                    ActionExecutor.name() );
+            FromAwsTopic topic = new FromAwsTopic( fromAwsTopic, AWSIotQos.QOS0, actionExecutor );
             client.subscribe( topic );
         }
     }

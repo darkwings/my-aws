@@ -17,6 +17,9 @@ public class Publisher extends AbstractActor {
 
     private AWSIotMqttClient client;
 
+    /**
+     * The message to be pushed to AWS
+     */
     public static class Message {
         public final String topic;
         public final String payload;
@@ -38,6 +41,10 @@ public class Publisher extends AbstractActor {
 
     public static Props props( AWSIotMqttClient client ) {
         return Props.create( Publisher.class, client );
+    }
+
+    public static String name() {
+        return "publisher";
     }
 
     public Publisher( AWSIotMqttClient client ) {

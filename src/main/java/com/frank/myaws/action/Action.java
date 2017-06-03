@@ -6,14 +6,23 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
+ * Immutable object that represents an action invocation received from
+ * AWS.
+ *
  * @author ftorriani
  */
 public class Action {
 
     private static final Logger LOGGER = LogManager.getLogger( Action.class );
 
+    /**
+     * The type of the action
+     */
     private Type action;
 
+    /**
+     * The location this action is directed to
+     */
     private Location location;
 
     public Action() {

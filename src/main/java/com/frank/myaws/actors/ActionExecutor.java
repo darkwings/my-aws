@@ -11,36 +11,33 @@ import com.frank.myaws.pi.PiAdapter;
 import java.util.Map;
 
 /**
+ * Executes an {@link Action} received from AWS IoT topic
+ *
  * @author ftorriani
  */
-public class Listener extends AbstractActor {
+public class ActionExecutor extends AbstractActor {
 
     protected final LoggingAdapter log = Logging.getLogger( context().system(), this );
 
     private Map<Location, PiAdapter> piAdapters;
 
-    public static final class Command {
-
-        public final Action action;
-
-        public Command( Action action ) {
-            this.action = action;
-        }
-    }
-
     public static Props props( Map<Location, PiAdapter> piAdapters ) {
-        return Props.create( Listener.class, piAdapters );
+        return Props.create( ActionExecutor.class, piAdapters );
     }
 
-    public Listener( Map<Location, PiAdapter> piAdapters ) {
+    public static String name() {
+        return "action-executor";
+    }
+
+    public ActionExecutor( Map<Location, PiAdapter> piAdapters ) {
         this.piAdapters = piAdapters;
     }
 
     public Receive createReceive() {
         return receiveBuilder().
-                match( Command.class, c -> {
-                    log.debug( "Received from AWS: {}", c.action );
-                    execute( c.action );
+                match( Action.class, a -> {
+                    log.debug( "Received from AWS: {}", a );
+                    execute( a );
                 } ).
                 matchAny( any -> log.info( "Received and ignored {}", any ) ).
                 build();
@@ -52,7 +49,9 @@ public class Listener extends AbstractActor {
                 Location location = action.getLocation();
                 log.info( "Executing action for Location {}", location );
                 PiAdapter piAdapter = piAdapters.get( location );
-                piAdapter.toggle();
+                if ( piAdapter != null ) {
+                    piAdapter.toggle();
+                }
                 break;
             default:
                 log.info( "Unknown action {}", action );

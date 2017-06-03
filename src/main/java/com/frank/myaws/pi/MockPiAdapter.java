@@ -1,6 +1,5 @@
 package com.frank.myaws.pi;
 
-import com.frank.myaws.App;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
