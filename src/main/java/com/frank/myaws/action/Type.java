@@ -6,5 +6,5 @@ package com.frank.myaws.action;
  * @author ftorriani
  */
 public enum Type {
-    TOGGLE_LIGHT
+    TOGGLE_LIGHT, TURN_ON, TURN_OFF
 }

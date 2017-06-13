@@ -31,6 +31,18 @@ public class MockPiAdapter implements PiAdapter {
     }
 
     @Override
+    public void on() {
+        status = true;
+        LOGGER.info( "Received ON. Status is {}", status );
+    }
+
+    @Override
+    public void off() {
+        status = false;
+        LOGGER.info( "Received OFF. Status is {}", status );
+    }
+
+    @Override
     public boolean in() {
         counter++;
         return counter %2 == 0;

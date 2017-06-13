@@ -44,11 +44,29 @@ public class ActionExecutor extends AbstractActor {
     }
 
     private void execute( Action action ) {
+        Location location;
+        PiAdapter piAdapter;
         switch (action.getAction()) {
             case TOGGLE_LIGHT:
-                Location location = action.getLocation();
-                log.info( "Executing action for Location {}", location );
-                PiAdapter piAdapter = piAdapters.get( location );
+                location = action.getLocation();
+                log.info( "Executing TOGGLE_LIGHT action for Location {}", location );
+                piAdapter = piAdapters.get( location );
+                if ( piAdapter != null ) {
+                    piAdapter.toggle();
+                }
+                break;
+            case TURN_ON:
+                location = action.getLocation();
+                log.info( "Executing TURN_ON action for Location {}", location );
+                piAdapter = piAdapters.get( location );
+                if ( piAdapter != null ) {
+                    piAdapter.toggle();
+                }
+                break;
+            case TURN_OFF:
+                location = action.getLocation();
+                log.info( "Executing TURN_OFF action for Location {}", location );
+                piAdapter = piAdapters.get( location );
                 if ( piAdapter != null ) {
                     piAdapter.toggle();
                 }

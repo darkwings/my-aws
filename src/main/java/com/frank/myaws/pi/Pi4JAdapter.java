@@ -47,11 +47,9 @@ public class Pi4JAdapter implements PiAdapter {
 
     @Override
     public void toggle() {
-        LOGGER.debug( "toggle called() on adapter {}", name );
-        if (!initialized) {
-            LOGGER.warn( "Adapter {} not initalized", name );
-            return;
-        }
+        checkInitialized();
+
+        LOGGER.debug( "toggle() called on adapter {}", name );
 
         if ( mode == PinMode.IN ) {
             LOGGER.info( "Adapter {}: pin {} is IN mode, toggle not supported()", name, pin );
@@ -59,6 +57,39 @@ public class Pi4JAdapter implements PiAdapter {
         }
 
         out.toggle();
+    }
+
+    @Override
+    public void on() {
+        checkInitialized();
+        LOGGER.debug( "on() called on adapter {}", name );
+
+        if ( mode == PinMode.IN ) {
+            LOGGER.info( "Adapter {}: pin {} is IN mode, toggle not supported()", name, pin );
+            return;
+        }
+
+        out.high();
+    }
+
+    @Override
+    public void off() {
+        checkInitialized();
+        LOGGER.debug( "off() called on adapter {}", name );
+
+        if ( mode == PinMode.IN ) {
+            LOGGER.info( "Adapter {}: pin {} is IN mode, toggle not supported()", name, pin );
+            return;
+        }
+
+        out.low();
+    }
+
+    void checkInitialized() {
+        if (!initialized) {
+            LOGGER.warn( "Adapter {} not initalized", name );
+            throw new IllegalStateException( "Adapter " + name + " not initialized" );
+        }
     }
 
     @Override

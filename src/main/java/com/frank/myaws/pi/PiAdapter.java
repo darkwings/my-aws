@@ -11,6 +11,10 @@ public interface PiAdapter {
 
     void init( String name, Integer pin, PinMode mode );
 
+    void on();
+
+    void off();
+
     void toggle();
 
     boolean in();
