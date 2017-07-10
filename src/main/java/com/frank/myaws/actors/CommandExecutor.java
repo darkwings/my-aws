@@ -4,38 +4,38 @@ import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.frank.myaws.action.Action;
+import com.frank.myaws.action.Command;
 import com.frank.myaws.action.Location;
 import com.frank.myaws.pi.PiAdapter;
 
 import java.util.Map;
 
 /**
- * Executes an {@link Action} received from AWS IoT topic
+ * Executes an {@link Command} received from AWS IoT topic
  *
  * @author ftorriani
  */
-public class ActionExecutor extends AbstractActor {
+public class CommandExecutor extends AbstractActor {
 
     protected final LoggingAdapter log = Logging.getLogger( context().system(), this );
 
     private Map<Location, PiAdapter> piAdapters;
 
     public static Props props( Map<Location, PiAdapter> piAdapters ) {
-        return Props.create( ActionExecutor.class, piAdapters );
+        return Props.create( CommandExecutor.class, piAdapters );
     }
 
     public static String name() {
         return "action-executor";
     }
 
-    public ActionExecutor( Map<Location, PiAdapter> piAdapters ) {
+    public CommandExecutor( Map<Location, PiAdapter> piAdapters ) {
         this.piAdapters = piAdapters;
     }
 
     public Receive createReceive() {
         return receiveBuilder().
-                match( Action.class, a -> {
+                match( Command.class, a -> {
                     log.debug( "Received from AWS: {}", a );
                     execute( a );
                 } ).
@@ -43,36 +43,36 @@ public class ActionExecutor extends AbstractActor {
                 build();
     }
 
-    private void execute( Action action ) {
+    private void execute( Command command ) {
         Location location;
         PiAdapter piAdapter;
-        switch (action.getAction()) {
+        switch ( command.getAction()) {
             case TOGGLE_LIGHT:
-                location = action.getLocation();
-                log.info( "Executing TOGGLE_LIGHT action for Location {}", location );
+                location = command.getLocation();
+                log.info( "Executing TOGGLE_LIGHT command for Location {}", location );
                 piAdapter = piAdapters.get( location );
                 if ( piAdapter != null ) {
                     piAdapter.toggle();
                 }
                 break;
             case TURN_ON:
-                location = action.getLocation();
-                log.info( "Executing TURN_ON action for Location {}", location );
+                location = command.getLocation();
+                log.info( "Executing TURN_ON command for Location {}", location );
                 piAdapter = piAdapters.get( location );
                 if ( piAdapter != null ) {
-                    piAdapter.toggle();
+                    piAdapter.on();
                 }
                 break;
             case TURN_OFF:
-                location = action.getLocation();
-                log.info( "Executing TURN_OFF action for Location {}", location );
+                location = command.getLocation();
+                log.info( "Executing TURN_OFF command for Location {}", location );
                 piAdapter = piAdapters.get( location );
                 if ( piAdapter != null ) {
-                    piAdapter.toggle();
+                    piAdapter.off();
                 }
                 break;
             default:
-                log.info( "Unknown action {}", action );
+                log.info( "Unknown command {}", command );
         }
     }
 

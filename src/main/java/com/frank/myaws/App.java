@@ -6,7 +6,7 @@ import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.amazonaws.services.iot.client.sample.sampleUtil.SampleUtil;
 import com.frank.myaws.action.Location;
-import com.frank.myaws.actors.ActionExecutor;
+import com.frank.myaws.actors.CommandExecutor;
 import com.frank.myaws.actors.Publisher;
 import com.frank.myaws.aws.FromAwsTopic;
 import com.frank.myaws.pi.PiAdapter;
@@ -101,8 +101,8 @@ public class App {
                     system.settings().config().getString( "my-aws.internal.pi-adapter" ),
                     system.settings().config().getConfigList( "my-aws.locations" ));
 
-            ActorRef actionExecutor = system.actorOf( ActionExecutor.props( adapters ),
-                    ActionExecutor.name() );
+            ActorRef actionExecutor = system.actorOf( CommandExecutor.props( adapters ),
+                    CommandExecutor.name() );
             FromAwsTopic topic = new FromAwsTopic( fromAwsTopic, AWSIotQos.QOS0, actionExecutor );
             client.subscribe( topic );
         }
