@@ -75,5 +75,5 @@ def handleControl(context, event):
         topic='aws-in-topic',
         qos=0,
         payload=json.dumps(payload)
-    )git 
+    )
     return { 'header': header, 'payload': payload }
