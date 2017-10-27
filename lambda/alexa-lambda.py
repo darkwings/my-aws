@@ -17,7 +17,7 @@ def handleDiscovery(context, event):
         "namespace": "Alexa.ConnectedHome.Discovery",
         "name": "DiscoverAppliancesResponse",
         "payloadVersion": "2"
-        }
+    }
 
     if event['header']['name'] == 'DiscoverAppliancesRequest':
         payload = {
@@ -58,22 +58,26 @@ def handleControl(context, event):
     device_id = event['payload']['appliance']['applianceId']
     message_id = event['header']['messageId']
 
+    payload = '{"action":'
     if event['header']['name'] == 'TurnOnRequest':
-        payload = {"action" : "TURN_ON", "location":"BEDROOM"}
+        payload += '"TURN_ON", "location":"'
     elif event['header']['name'] == 'TurnOffRequest':
-        payload = {"action" : "TURN_OFF", "location":"BEDROOM"}
+        payload += '"TURN_OFF", "location":"'
+
+    payload += device_id
+    payload += '"}'
 
     header = {
         "namespace":"Alexa.ConnectedHome.Control",
-        "name":"ToggleConfirmation",
+        "name":"OnOffConfirmation",
         "payloadVersion":"2",
         "messageId": message_id
-        }
+    }
 
     client = boto3.client('iot-data', region_name='eu-west-1')
     response = client.publish(
         topic='aws-in-topic',
         qos=0,
-        payload=json.dumps(payload)
+        payload=payload
     )
     return { 'header': header, 'payload': payload }

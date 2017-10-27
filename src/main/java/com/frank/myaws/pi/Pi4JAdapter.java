@@ -6,6 +6,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.Optional;
 
+import static com.frank.myaws.pi.PiAdapter.PinMode.IN;
+import static com.frank.myaws.pi.PiAdapter.PinMode.OUT;
+
 /**
  * @author ftorriani
  */
@@ -34,7 +37,7 @@ public class Pi4JAdapter implements PiAdapter {
         this.mode = mode;
         this.name = name;
 
-        if ( mode == PinMode.OUT ) {
+        if ( mode == OUT ) {
             getPin( pin ).ifPresent( raspiPin -> {
                 LOGGER.info( "Initializing pin {}", raspiPin );
                 out = gpio.provisionDigitalOutputPin( raspiPin, "MyPin", PinState.HIGH );
@@ -51,7 +54,7 @@ public class Pi4JAdapter implements PiAdapter {
 
         LOGGER.debug( "toggle() called on adapter {}", name );
 
-        if ( mode == PinMode.IN ) {
+        if ( mode == IN ) {
             LOGGER.info( "Adapter {}: pin {} is IN mode, toggle not supported()", name, pin );
             return;
         }
@@ -64,7 +67,7 @@ public class Pi4JAdapter implements PiAdapter {
         checkInitialized();
         LOGGER.debug( "on() called on adapter {}", name );
 
-        if ( mode == PinMode.IN ) {
+        if ( mode == IN ) {
             LOGGER.info( "Adapter {}: pin {} is IN mode, toggle not supported()", name, pin );
             return;
         }
@@ -77,7 +80,7 @@ public class Pi4JAdapter implements PiAdapter {
         checkInitialized();
         LOGGER.debug( "off() called on adapter {}", name );
 
-        if ( mode == PinMode.IN ) {
+        if ( mode == IN ) {
             LOGGER.info( "Adapter {}: pin {} is IN mode, toggle not supported()", name, pin );
             return;
         }
@@ -94,7 +97,7 @@ public class Pi4JAdapter implements PiAdapter {
 
     @Override
     public boolean in() {
-        if ( mode == PinMode.OUT ) {
+        if ( mode == OUT ) {
             LOGGER.info( "Adapter {}: pin {} is OUT mode, read NOT supported()", name, pin );
             return false;
         }
