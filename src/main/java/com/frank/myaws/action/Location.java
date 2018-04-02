@@ -14,5 +14,6 @@ public enum Location {
     CHILD1_BEDROOM,
     CHILD2_BEDROOM,
     BATHROOM1,
-    BATHROOM2
+    BATHROOM2,
+    DASHBOARD_BEDROOM
 }

@@ -26,10 +26,8 @@ public class FromAwsTopic extends AWSIotTopic {
 
     @Override
     public void onMessage( AWSIotMessage message ) {
-        Command.fromMessage( message.getStringPayload() ).ifPresent( command -> {
-            actionExecutor.tell( command, ActorRef.noSender() );
-        } ).orElse( () -> {
-            LOGGER.warn( "Unknown message {}", message.getStringPayload() );
-        } );
+        Command.fromMessage( message.getStringPayload() ).
+                ifPresent( command -> actionExecutor.tell( command, ActorRef.noSender() ) ).
+                orElse( () -> LOGGER.warn( "Unknown message {}", message.getStringPayload() ) );
     }
 }
