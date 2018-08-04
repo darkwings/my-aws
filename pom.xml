@@ -148,26 +148,38 @@
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-actor_2.11</artifactId>
-            <version>2.5.2</version>
+            <artifactId>akka-actor_2.12</artifactId>
+            <version>2.5.14</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.5</version>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-http_2.12</artifactId>
+            <version>10.1.3</version>
         </dependency>
 
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.5</version>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-stream_2.12</artifactId>
+            <version>2.5.14</version> <!-- Or whatever the latest version is -->
         </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>org.apache.logging.log4j</groupId>-->
+            <!--<artifactId>log4j-api</artifactId>-->
+            <!--<version>2.5</version>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.apache.logging.log4j</groupId>-->
+            <!--<artifactId>log4j-core</artifactId>-->
+            <!--<version>2.5</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>de.heikoseeberger</groupId>
-            <artifactId>akka-log4j_2.11</artifactId>
-            <version>1.3.0</version>
+            <artifactId>akka-log4j_2.12</artifactId>
+            <version>1.6.1</version>
         </dependency>
 
         <dependency>
@@ -214,8 +226,8 @@
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-testkit_2.11</artifactId>
-            <version>2.5.2</version>
+            <artifactId>akka-testkit_2.12</artifactId>
+            <version>2.5.14</version>
             <scope>test</scope>
         </dependency>
 

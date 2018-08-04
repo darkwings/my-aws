@@ -1,4 +1,4 @@
-package com.frank.myaws.actors;
+package com.frank.myaws.actors.aws;
 
 import akka.actor.AbstractActor;
 import akka.actor.Props;

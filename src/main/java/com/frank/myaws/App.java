@@ -2,12 +2,16 @@ package com.frank.myaws;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.http.javadsl.Http;
+import akka.http.javadsl.server.AllDirectives;
+import akka.http.javadsl.server.Route;
+import akka.stream.ActorMaterializer;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.amazonaws.services.iot.client.sample.sampleUtil.SampleUtil;
 import com.frank.myaws.action.Location;
-import com.frank.myaws.actors.CommandExecutor;
-import com.frank.myaws.actors.Publisher;
+import com.frank.myaws.actors.aws.CommandExecutor;
+import com.frank.myaws.actors.aws.Publisher;
 import com.frank.myaws.aws.FromAwsTopic;
 import com.frank.myaws.pi.PiAdapter;
 import com.typesafe.config.Config;
@@ -26,7 +30,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 /**
  * @author ftorriani
  */
-public class App {
+public class App extends AllDirectives {
 
     private static final Logger LOGGER = LogManager.getLogger( App.class );
 
@@ -64,7 +68,7 @@ public class App {
     }
 
     private void start() throws Exception {
-        ActorSystem system = ActorSystem.create();
+        ActorSystem system = ActorSystem.create( "my-aws" );
 
         SampleUtil.KeyStorePasswordPair pair = SampleUtil.
                 getKeyStorePasswordPair( certificate, privateKey );
@@ -99,19 +103,30 @@ public class App {
 
             Map<Location, PiAdapter> adapters = transform(
                     system.settings().config().getString( "my-aws.internal.pi-adapter" ),
-                    system.settings().config().getConfigList( "my-aws.locations" ));
+                    system.settings().config().getConfigList( "my-aws.locations" ) );
 
             ActorRef actionExecutor = system.actorOf( CommandExecutor.props( adapters ),
                     CommandExecutor.name() );
             FromAwsTopic topic = new FromAwsTopic( fromAwsTopic, AWSIotQos.QOS0, actionExecutor );
             client.subscribe( topic );
+
+            final Http http = Http.get( system );
+            final ActorMaterializer materializer = ActorMaterializer.create( system );
         }
     }
 
-    private Map<Location,PiAdapter> transform( String adapterClassName,
-                                               List<? extends Config> configList )
+    private Route createRoute() {
+
+        return route(
+                path( "hello", () ->
+                        get( () ->
+                                complete( "<h1>Say hello to akka-http</h1>" ) ) ) );
+    }
+
+    private Map<Location, PiAdapter> transform( String adapterClassName,
+                                                List<? extends Config> configList )
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        Objects.requireNonNull(configList);
+        Objects.requireNonNull( configList );
 
         Map<Location, PiAdapter> locations = new HashMap<>();
         for ( Config c : configList ) {

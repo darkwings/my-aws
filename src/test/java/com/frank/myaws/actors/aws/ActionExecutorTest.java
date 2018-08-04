@@ -1,4 +1,4 @@
-package com.frank.myaws.actors;
+package com.frank.myaws.actors.aws;
 
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
@@ -7,6 +7,7 @@ import akka.testkit.TestActorRef;
 import akka.testkit.TestKit;
 import com.frank.myaws.action.Command;
 import com.frank.myaws.action.Location;
+import com.frank.myaws.actors.aws.CommandExecutor;
 import com.frank.myaws.pi.PiAdapter;
 import org.junit.After;
 import org.junit.Before;
