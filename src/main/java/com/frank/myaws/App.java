@@ -1,18 +1,22 @@
 package com.frank.myaws;
 
+import akka.NotUsed;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
+import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
+import akka.http.javadsl.ServerBinding;
 import akka.http.javadsl.server.AllDirectives;
-import akka.http.javadsl.server.Route;
 import akka.stream.ActorMaterializer;
+import akka.stream.javadsl.Flow;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.amazonaws.services.iot.client.sample.sampleUtil.SampleUtil;
-import com.frank.myaws.action.Location;
+import com.frank.myaws.action.aws.Location;
 import com.frank.myaws.actors.aws.CommandExecutor;
 import com.frank.myaws.actors.aws.Publisher;
-import com.frank.myaws.aws.FromAwsTopic;
+import com.frank.myaws.actors.web.WebEventHandler;
+import com.frank.myaws.topic.FromAwsTopic;
 import com.frank.myaws.pi.PiAdapter;
 import com.typesafe.config.Config;
 import scala.concurrent.duration.FiniteDuration;
@@ -24,6 +28,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.CompletionStage;
+
+import akka.http.javadsl.model.HttpRequest;
+import akka.http.javadsl.model.HttpResponse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -110,17 +118,23 @@ public class App extends AllDirectives {
             FromAwsTopic topic = new FromAwsTopic( fromAwsTopic, AWSIotQos.QOS0, actionExecutor );
             client.subscribe( topic );
 
-            final Http http = Http.get( system );
-            final ActorMaterializer materializer = ActorMaterializer.create( system );
+            // Web
+
+            ActorRef webActor = system.actorOf( WebEventHandler.props( topic, client ), WebEventHandler.name() );
+            Routes routes = new Routes( system, webActor );
+
+            Http http = Http.get( system );
+            ActorMaterializer materializer = ActorMaterializer.create( system );
+
+            Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = routes.createRoutes().flow( system, materializer );
+            http.bindAndHandle( routeFlow,
+                    ConnectHttp.toHost( "localhost", 8080 ), materializer );
+            LOGGER.info( "Server online at http://localhost:8080/..." );
+
+//            binding
+//                    .thenCompose( ServerBinding::unbind ) // trigger unbinding from the port
+//                    .thenAccept( unbound -> system.terminate() ); // and shutdown when done
         }
-    }
-
-    private Route createRoute() {
-
-        return route(
-                path( "hello", () ->
-                        get( () ->
-                                complete( "<h1>Say hello to akka-http</h1>" ) ) ) );
     }
 
     private Map<Location, PiAdapter> transform( String adapterClassName,

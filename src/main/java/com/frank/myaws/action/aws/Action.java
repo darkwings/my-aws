@@ -1,4 +1,4 @@
-package com.frank.myaws.action;
+package com.frank.myaws.action.aws;
 
 /**
  * TODO dovrebbero essere configurabili
