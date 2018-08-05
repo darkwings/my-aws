@@ -5,8 +5,8 @@ import akka.actor.ActorSystem;
 import akka.testkit.CallingThreadDispatcher;
 import akka.testkit.TestActorRef;
 import akka.testkit.TestKit;
-import com.frank.myaws.action.aws.Command;
-import com.frank.myaws.action.aws.Location;
+import com.frank.myaws.action.Command;
+import com.frank.myaws.action.Location;
 import com.frank.myaws.pi.PiAdapter;
 import org.junit.After;
 import org.junit.Before;
@@ -16,8 +16,8 @@ import scala.concurrent.duration.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.frank.myaws.action.aws.Location.*;
-import static com.frank.myaws.action.aws.Action.TOGGLE_LIGHT;
+import static com.frank.myaws.action.Location.*;
+import static com.frank.myaws.action.Action.TOGGLE_LIGHT;
 import static org.mockito.Mockito.*;
 
 /**

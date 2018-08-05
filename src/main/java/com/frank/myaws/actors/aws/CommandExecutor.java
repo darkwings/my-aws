@@ -4,8 +4,8 @@ import akka.actor.AbstractActor;
 import akka.actor.Props;
 import akka.event.Logging;
 import akka.event.LoggingAdapter;
-import com.frank.myaws.action.aws.Command;
-import com.frank.myaws.action.aws.Location;
+import com.frank.myaws.action.Command;
+import com.frank.myaws.action.Location;
 import com.frank.myaws.pi.PiAdapter;
 
 import java.util.Map;

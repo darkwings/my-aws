@@ -4,7 +4,7 @@ import akka.actor.ActorRef;
 import com.amazonaws.services.iot.client.AWSIotMessage;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.amazonaws.services.iot.client.AWSIotTopic;
-import com.frank.myaws.action.aws.Command;
+import com.frank.myaws.action.Command;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

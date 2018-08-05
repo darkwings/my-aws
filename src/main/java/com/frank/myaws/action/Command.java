@@ -1,4 +1,4 @@
-package com.frank.myaws.action.aws;
+package com.frank.myaws.action;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.frank.myaws.util.SmartOptional;

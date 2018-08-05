@@ -1,11 +1,11 @@
-package com.frank.myaws.actors.web;
+package com.frank.myaws.actors.client;
 
 import java.io.Serializable;
 
 /**
  * @author ftorriani
  */
-public interface WebEventHandlerMessages {
+public interface ClientActionHandlerMessages {
 
     class ActionPerformed implements Serializable {
         private final String description;
@@ -24,6 +24,10 @@ public interface WebEventHandlerMessages {
     }
 
     class Connect implements Serializable {
+
+    }
+
+    class InternalConnect implements Serializable {
 
     }
 

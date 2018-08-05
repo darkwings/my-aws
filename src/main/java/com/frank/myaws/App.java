@@ -5,33 +5,29 @@ import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
 import akka.http.javadsl.ConnectHttp;
 import akka.http.javadsl.Http;
-import akka.http.javadsl.ServerBinding;
+import akka.http.javadsl.model.HttpRequest;
+import akka.http.javadsl.model.HttpResponse;
 import akka.http.javadsl.server.AllDirectives;
 import akka.stream.ActorMaterializer;
 import akka.stream.javadsl.Flow;
-import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
 import com.amazonaws.services.iot.client.sample.sampleUtil.SampleUtil;
-import com.frank.myaws.action.aws.Location;
+import com.frank.myaws.action.Location;
 import com.frank.myaws.actors.aws.CommandExecutor;
 import com.frank.myaws.actors.aws.Publisher;
-import com.frank.myaws.actors.web.WebEventHandler;
-import com.frank.myaws.topic.FromAwsTopic;
+import com.frank.myaws.actors.client.ClientActionHandler;
+import com.frank.myaws.client.AwsClient;
 import com.frank.myaws.pi.PiAdapter;
+import com.frank.myaws.topic.FromAwsTopic;
 import com.typesafe.config.Config;
-import scala.concurrent.duration.FiniteDuration;
-
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import scala.concurrent.duration.FiniteDuration;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CompletionStage;
-
-import akka.http.javadsl.model.HttpRequest;
-import akka.http.javadsl.model.HttpResponse;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 
@@ -84,8 +80,11 @@ public class App extends AllDirectives {
         LOGGER.info( "Connecting to endpoint '{}'", endpoint );
         LOGGER.info( "Cliend ID is '{}'", clientId );
 
-        AWSIotMqttClient client = new AWSIotMqttClient( endpoint, clientId,
-                pair.keyStore, pair.keyPassword );
+//        AWSIotMqttClient client = new AWSIotMqttClient( endpoint, clientId,
+//                pair.keyStore, pair.keyPassword );
+//        client.connect();
+
+        AwsClient client = new AwsClient( endpoint, clientId, pair );
         client.connect();
 
         if ( "client".equals( type ) ) {
@@ -120,7 +119,7 @@ public class App extends AllDirectives {
 
             // Web
 
-            ActorRef webActor = system.actorOf( WebEventHandler.props( topic, client ), WebEventHandler.name() );
+            ActorRef webActor = system.actorOf( ClientActionHandler.props( topic, client ), ClientActionHandler.name() );
             Routes routes = new Routes( system, webActor );
 
             Http http = Http.get( system );
@@ -128,7 +127,7 @@ public class App extends AllDirectives {
 
             Flow<HttpRequest, HttpResponse, NotUsed> routeFlow = routes.createRoutes().flow( system, materializer );
             http.bindAndHandle( routeFlow,
-                    ConnectHttp.toHost( "localhost", 8080 ), materializer );
+                    ConnectHttp.toHost( "0.0.0.0", 8080 ), materializer );
             LOGGER.info( "Server online at http://localhost:8080/..." );
 
 //            binding

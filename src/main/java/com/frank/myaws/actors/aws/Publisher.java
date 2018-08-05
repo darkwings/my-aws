@@ -7,6 +7,7 @@ import akka.event.LoggingAdapter;
 import com.amazonaws.services.iot.client.AWSIotMessage;
 import com.amazonaws.services.iot.client.AWSIotMqttClient;
 import com.amazonaws.services.iot.client.AWSIotQos;
+import com.frank.myaws.client.AwsClient;
 
 /**
  * @author ftorriani
@@ -15,7 +16,7 @@ public class Publisher extends AbstractActor {
 
     protected final LoggingAdapter log = Logging.getLogger( context().system(), this );
 
-    private AWSIotMqttClient client;
+    private AwsClient client;
 
     /**
      * The message to be pushed to AWS
@@ -39,7 +40,7 @@ public class Publisher extends AbstractActor {
         }
     }
 
-    public static Props props( AWSIotMqttClient client ) {
+    public static Props props( AwsClient client ) {
         return Props.create( Publisher.class, client );
     }
 
@@ -47,7 +48,7 @@ public class Publisher extends AbstractActor {
         return "publisher";
     }
 
-    public Publisher( AWSIotMqttClient client ) {
+    public Publisher( AwsClient client ) {
         this.client = client;
     }
 
@@ -57,7 +58,7 @@ public class Publisher extends AbstractActor {
                 match( Message.class, m -> {
                     log.info( "Sending {} to AWS", m );
                     MyAwsMessage message = new MyAwsMessage( m.topic, AWSIotQos.QOS0, m.payload );
-                    client.publish( message ,3000 );
+                    client.publish( message , 3000L );
                 }).
                 matchAny( any -> log.info( "Received and ignored {}", any ) ).
                 build();
