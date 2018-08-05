@@ -120,7 +120,7 @@ public class App extends AllDirectives {
             // Web
 
             ActorRef webActor = system.actorOf( ClientActionHandler.props( topic, client ), ClientActionHandler.name() );
-            Routes routes = new Routes( system, webActor );
+            Routes routes = new Routes( system, webActor, actionExecutor );
 
             Http http = Http.get( system );
             ActorMaterializer materializer = ActorMaterializer.create( system );

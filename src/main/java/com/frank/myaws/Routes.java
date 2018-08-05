@@ -12,6 +12,9 @@ import akka.http.javadsl.server.AllDirectives;
 import akka.http.javadsl.server.Route;
 import akka.pattern.PatternsCS;
 import akka.util.Timeout;
+import com.frank.myaws.action.Action;
+import com.frank.myaws.action.Command;
+import com.frank.myaws.action.Location;
 import com.frank.myaws.actors.client.ClientActionHandlerMessages.ActionPerformed;
 import com.frank.myaws.actors.client.ClientActionHandlerMessages.Connect;
 import com.frank.myaws.actors.client.ClientActionHandlerMessages.Disconnect;
@@ -36,12 +39,14 @@ public class Routes extends AllDirectives {
     private final Timeout timeout = new Timeout( Duration.create( 20, TimeUnit.SECONDS ) );
 
     private final ActorRef webActor;
+    private final ActorRef commandExecutor;
     private final LoggingAdapter log;
 
     private String home;
 
-    public Routes( ActorSystem system, ActorRef webActor ) {
+    public Routes( ActorSystem system, ActorRef webActor, ActorRef commandExecutor ) {
         this.webActor = webActor;
+        this.commandExecutor = commandExecutor;
         log = Logging.getLogger( system, this );
 
         try {
@@ -69,6 +74,12 @@ public class Routes extends AllDirectives {
                                         return complete( HttpEntities.create( TEXT_HTML_UTF8,
                                                 home.replaceAll( "%MESSAGE%", "Reconnect requested" ) ) );
                                     } );
+                        } ) ),
+                post( () ->
+                        path( "toggle-bedroom", () -> {
+                            commandExecutor.tell( new Command( Action.TOGGLE_LIGHT, Location.BEDROOM ), ActorRef.noSender() );
+                            return complete( HttpEntities.create( TEXT_HTML_UTF8,
+                                    home.replaceAll( "%MESSAGE%", "Toggle bedroom" ) ) );
                         } ) )
 //                ,
 //                post( () ->
